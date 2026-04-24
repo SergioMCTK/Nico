@@ -1,0 +1,50 @@
+---
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+  <div class="flex items-center justify-between px-6 md:px-10 py-5">
+    <!-- Menu toggle -->
+    <button
+      id="menu-toggle"
+      class="flex flex-col gap-[6px] group cursor-pointer z-50"
+      aria-label="Toggle menu"
+    >
+      <span class="block w-8 h-[2px] bg-nico-text transition-all duration-300 group-hover:w-6 origin-left" id="bar-1"></span>
+      <span class="block w-6 h-[2px] bg-nico-text transition-all duration-300 group-hover:w-8" id="bar-2"></span>
+      <span class="block w-8 h-[2px] bg-nico-text transition-all duration-300 group-hover:w-6 origin-left" id="bar-3"></span>
+    </button>
+
+    <!-- Logo -->
+    <a href="/" class="absolute left-1/2 -translate-x-1/2 font-heading text-3xl md:text-4xl tracking-wider hover:text-nico-red transition-colors duration-300">
+      NICO
+    </a>
+
+    <!-- Cart toggle -->
+    <button
+      id="cart-toggle"
+      class="relative cursor-pointer z-50 group"
+      aria-label="Toggle cart"
+    >
+      <svg class="w-6 h-6 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      <span class="absolute -top-1 -right-2 bg-nico-red text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full" id="cart-count">3</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Scroll-aware navbar background -->
+<script>
+  const nav = document.querySelector('nav');
+  let lastScroll = 0;
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY;
+    if (currentScroll > 100) {
+      nav?.classList.add('backdrop-blur-md');
+    } else {
+      nav?.classList.remove('backdrop-blur-md');
+    }
+    lastScroll = currentScroll;
+  });
+</script>

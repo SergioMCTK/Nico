@@ -1,0 +1,244 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import SidebarMenu from '../components/SidebarMenu.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import Marquee from '../components/Marquee.astro';
+import Lookbook from '../components/Lookbook.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Footer from '../components/Footer.astro';
+import { products, getFeaturedProducts } from '../data/products';
+import { categories } from '../data/categories';
+
+const featured = getFeaturedProducts();
+const initialProducts = products.slice(0, 12);
+---
+
+<Layout title="Home">
+  <Navbar />
+  <SidebarMenu />
+  <CartDrawer />
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background gradient -->
+    <div class="absolute inset-0 bg-gradient-to-b from-nico-black via-nico-surface to-nico-black"></div>
+
+    <!-- Decorative elements -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-nico-red/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-nico-purple/5 rounded-full blur-3xl"></div>
+
+    <!-- Grid lines decoration -->
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#f5f5f5 1px, transparent 1px), linear-gradient(90deg, #f5f5f5 1px, transparent 1px); background-size: 80px 80px;"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
+      <!-- Subheading -->
+      <p class="text-nico-muted text-xs md:text-sm uppercase tracking-[0.5em] mb-6 fade-in-element">
+        Underground Streetwear — Est. 2024
+      </p>
+
+      <!-- Main heading -->
+      <h1 class="font-heading text-[clamp(4rem,15vw,14rem)] leading-[0.85] tracking-wider fade-in-element">
+        NI<span class="text-nico-red">C</span>O
+      </h1>
+
+      <!-- Tagline -->
+      <div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 fade-in-element">
+        <span class="text-stroke text-2xl md:text-4xl font-heading tracking-wider">WEAR</span>
+        <span class="font-heading text-2xl md:text-4xl tracking-wider">THE</span>
+        <span class="text-stroke-red text-2xl md:text-4xl font-heading tracking-wider">VOID</span>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-element">
+        <a
+          href="/category/men"
+          class="border-2 border-nico-text px-10 py-4 font-heading text-lg tracking-[0.2em] hover:bg-nico-text hover:text-nico-black transition-all duration-300"
+        >
+          EXPLORE
+        </a>
+        <a
+          href="/category/women"
+          class="border-2 border-nico-red text-nico-red px-10 py-4 font-heading text-lg tracking-[0.2em] hover:bg-nico-red hover:text-nico-text transition-all duration-300"
+        >
+          NEW DROPS
+        </a>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+        <span class="text-nico-muted text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+        <svg class="w-4 h-4 text-nico-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee 1 -->
+  <Marquee texts={['NEW ARRIVALS', 'SS26 COLLECTION', 'LIMITED EDITION', 'WORLDWIDE SHIPPING', 'NO RULES']} variant="default" speed="normal" />
+
+  <!-- Featured Products -->
+  <section class="py-20 px-6 md:px-10">
+    <div class="flex items-end justify-between mb-12">
+      <div>
+        <span class="text-nico-muted text-xs uppercase tracking-[0.4em]">Curated</span>
+        <h2 class="font-heading text-5xl md:text-7xl tracking-wider mt-2">FEATURED</h2>
+      </div>
+      <span class="text-nico-muted text-xs uppercase tracking-[0.3em] hidden md:block">
+        {featured.length} pieces
+      </span>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+      {featured.map((product, i) => (
+        <ProductCard product={product} index={i} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Marquee 2 -->
+  <Marquee texts={['NICO', 'UNDERGROUND', 'STREETWEAR', 'ANTI-ORDINARY']} variant="outlined" direction="right" speed="slow" />
+
+  <!-- Category Blocks -->
+  <section class="py-20 px-6 md:px-10">
+    <div class="mb-12">
+      <span class="text-nico-muted text-xs uppercase tracking-[0.4em]">Browse</span>
+      <h2 class="font-heading text-5xl md:text-7xl tracking-wider mt-2">CATEGORIES</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {categories.filter(c => c.type === 'gender').map((cat, i) => (
+        <a
+          href={`/category/${cat.slug}`}
+          class="group relative h-[250px] md:h-[350px] overflow-hidden fade-in-element"
+          style={`animation-delay: ${i * 100}ms`}
+        >
+          <div
+            class="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+            style={`background: ${cat.gradient};`}
+          ></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-8">
+            <span class="text-nico-muted text-[10px] uppercase tracking-[0.3em]">{cat.description}</span>
+            <h3 class="font-heading text-5xl md:text-6xl tracking-wider mt-2 group-hover:text-nico-red transition-colors duration-300">
+              {cat.name}
+            </h3>
+            <div class="mt-3 w-0 group-hover:w-20 h-[2px] bg-nico-red transition-all duration-500"></div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Lookbook -->
+  <Marquee texts={['LOOKBOOK', 'SS26', 'EDITORIAL', 'VISION']} variant="red" speed="fast" />
+  <Lookbook />
+
+  <!-- Infinite Scroll Product Grid -->
+  <section class="py-20 px-6 md:px-10" id="infinite-scroll-section">
+    <div class="flex items-end justify-between mb-12">
+      <div>
+        <span class="text-nico-muted text-xs uppercase tracking-[0.4em]">All Products</span>
+        <h2 class="font-heading text-5xl md:text-7xl tracking-wider mt-2">THE GRID</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="product-grid">
+      {initialProducts.map((product, i) => (
+        <ProductCard product={product} index={i} />
+      ))}
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="load-more-trigger" class="flex items-center justify-center py-16">
+      <div id="loading-spinner" class="flex items-center gap-3">
+        <div class="w-2 h-2 bg-nico-red rounded-full animate-pulse"></div>
+        <span class="text-nico-muted text-xs uppercase tracking-[0.3em]">Loading more</span>
+        <div class="w-2 h-2 bg-nico-red rounded-full animate-pulse [animation-delay:0.3s]"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marquee 3 -->
+  <Marquee texts={['FREE SHIPPING OVER $150', 'WORLDWIDE DELIVERY', '30-DAY RETURNS', 'SECURE CHECKOUT']} variant="default" direction="right" speed="normal" />
+
+  <Footer />
+
+  <!-- Infinite Scroll Script -->
+  <script>
+    const allProductsData = JSON.parse(document.getElementById('products-json')?.textContent || '[]');
+    const grid = document.getElementById('product-grid');
+    const trigger = document.getElementById('load-more-trigger');
+    let currentIndex = 12;
+    let isLoading = false;
+    const batchSize = 8;
+
+    function createProductCard(product: any, index: number) {
+      const card = document.createElement('a');
+      card.href = '#';
+      card.className = 'product-card group block fade-in-element visible';
+      card.dataset.productId = product.id;
+
+      card.innerHTML = `
+        <div class="relative overflow-hidden product-card-hover">
+          <div class="glitch-hover relative">
+            <div class="aspect-[3/4] w-full rounded-sm" style="background: ${product.gradient};">
+              <div class="absolute inset-0 flex flex-col justify-between p-4">
+                <div class="flex justify-between items-start">
+                  ${product.isNew ? '<span class="bg-nico-red text-[10px] font-bold uppercase tracking-widest px-3 py-1">NEW</span>' : ''}
+                  <span class="ml-auto text-[10px] font-bold uppercase tracking-widest text-nico-muted bg-nico-black/60 px-2 py-1">${product.gender}</span>
+                </div>
+                <div class="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                  <p class="font-heading text-2xl md:text-3xl leading-none tracking-wide">${product.name}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 space-y-1">
+            <div class="flex justify-between items-baseline">
+              <h3 class="font-heading text-lg tracking-wider group-hover:text-nico-red transition-colors duration-300">${product.name}</h3>
+              <span class="font-body text-sm font-semibold text-nico-muted group-hover:text-nico-text transition-colors duration-300">$${product.price}</span>
+            </div>
+            <p class="text-nico-muted text-xs tracking-wider uppercase">${product.category}</p>
+          </div>
+          <div class="absolute bottom-0 left-0 w-0 h-[2px] bg-nico-red group-hover:w-full transition-all duration-500"></div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function loadMore() {
+      if (isLoading) return;
+      isLoading = true;
+
+      setTimeout(() => {
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < batchSize; i++) {
+          const productIndex = (currentIndex + i) % allProductsData.length;
+          const card = createProductCard(allProductsData[productIndex], i);
+          fragment.appendChild(card);
+        }
+        grid?.appendChild(fragment);
+        currentIndex += batchSize;
+        isLoading = false;
+      }, 500);
+    }
+
+    const scrollObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    if (trigger) {
+      scrollObserver.observe(trigger);
+    }
+  </script>
+
+  <!-- Product data for infinite scroll -->
+  <script type="application/json" id="products-json" set:html={JSON.stringify(products)} />
+</Layout>

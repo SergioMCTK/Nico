@@ -1,0 +1,116 @@
+---
+import { mockCartItems } from '../data/cart';
+
+const total = mockCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+---
+
+<!-- Cart overlay -->
+<div id="cart-overlay" class="fixed inset-0 z-[60] overlay-bg hidden opacity-0 transition-opacity duration-300"></div>
+
+<!-- Cart drawer -->
+<aside
+  id="cart-drawer"
+  class="fixed top-0 right-0 h-full w-full md:w-[440px] bg-nico-black z-[70] transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] border-l border-nico-border overflow-y-auto"
+>
+  <div class="flex flex-col min-h-full px-8 md:px-10 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-10">
+      <h2 class="font-heading text-3xl tracking-wider">YOUR BAG</h2>
+      <button id="cart-close" class="group cursor-pointer" aria-label="Close cart">
+        <svg class="w-7 h-7 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Cart items -->
+    <div class="flex-1 space-y-6">
+      {mockCartItems.map((item) => (
+        <div class="flex gap-4 pb-6 border-b border-nico-border group">
+          <!-- Item image -->
+          <div
+            class="w-20 h-24 flex-shrink-0 rounded-sm"
+            style={`background: ${item.gradient};`}
+          ></div>
+
+          <!-- Item info -->
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-heading text-lg tracking-wider">{item.name}</h3>
+              <p class="text-nico-muted text-xs tracking-wider mt-1">SIZE: {item.size}</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3 border border-nico-border">
+                <button class="cart-qty-btn px-3 py-1 text-sm hover:bg-nico-surface transition-colors cursor-pointer" data-action="decrease">−</button>
+                <span class="text-sm font-medium w-6 text-center">{item.quantity}</span>
+                <button class="cart-qty-btn px-3 py-1 text-sm hover:bg-nico-surface transition-colors cursor-pointer" data-action="increase">+</button>
+              </div>
+              <span class="font-medium">${item.price * item.quantity}</span>
+            </div>
+          </div>
+
+          <!-- Remove button -->
+          <button class="self-start text-nico-muted hover:text-nico-red transition-colors opacity-0 group-hover:opacity-100 cursor-pointer" aria-label="Remove item">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      ))}
+    </div>
+
+    <!-- Cart footer -->
+    <div class="mt-8 pt-6 border-t border-nico-border space-y-6">
+      <div class="flex items-center justify-between">
+        <span class="text-nico-muted uppercase tracking-widest text-sm">Subtotal</span>
+        <span class="font-heading text-2xl">${total}</span>
+      </div>
+      <p class="text-nico-muted text-xs tracking-wider">Shipping calculated at checkout.</p>
+      <button class="w-full bg-nico-red hover:bg-red-700 text-nico-text font-heading text-lg tracking-widest py-4 transition-all duration-300 hover:tracking-[0.3em] cursor-pointer">
+        CHECKOUT
+      </button>
+      <button class="w-full border border-nico-border hover:border-nico-text text-nico-muted hover:text-nico-text font-heading tracking-widest py-3 transition-all duration-300 cursor-pointer text-sm">
+        CONTINUE SHOPPING
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+  const cartToggle = document.getElementById('cart-toggle');
+  const cartDrawer = document.getElementById('cart-drawer');
+  const cartOverlay = document.getElementById('cart-overlay');
+  const cartClose = document.getElementById('cart-close');
+
+  function openCart() {
+    cartDrawer?.classList.remove('translate-x-full');
+    cartOverlay?.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      cartOverlay?.classList.remove('opacity-0');
+      cartOverlay?.classList.add('opacity-100');
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    cartDrawer?.classList.add('translate-x-full');
+    cartOverlay?.classList.remove('opacity-100');
+    cartOverlay?.classList.add('opacity-0');
+    setTimeout(() => {
+      cartOverlay?.classList.add('hidden');
+    }, 300);
+    document.body.style.overflow = '';
+  }
+
+  cartToggle?.addEventListener('click', openCart);
+  cartClose?.addEventListener('click', closeCart);
+  cartOverlay?.addEventListener('click', closeCart);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+  });
+
+  // Continue shopping closes cart
+  const continueBtn = cartDrawer?.querySelector('button:last-child');
+  continueBtn?.addEventListener('click', closeCart);
+</script>

@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import SidebarMenu from '../components/SidebarMenu.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import Marquee from '../components/Marquee.astro';
+import Footer from '../components/Footer.astro';
+import { faqItems, getFaqCategories } from '../data/faq';
+
+const faqCategories = getFaqCategories();
+---
+
+<Layout title="FAQ">
+  <Navbar />
+  <SidebarMenu />
+  <CartDrawer />
+
+  <!-- FAQ Hero -->
+  <section class="relative pt-32 pb-16 px-6 md:px-10 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-nico-surface to-nico-black"></div>
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-nico-red/3 rounded-full blur-3xl"></div>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+      <span class="text-nico-muted text-xs uppercase tracking-[0.5em]">Help Center</span>
+      <h1 class="font-heading text-[clamp(3rem,10vw,9rem)] leading-[0.9] tracking-wider mt-4">
+        F<span class="text-nico-red">A</span>Q
+      </h1>
+      <p class="text-nico-muted text-sm md:text-base mt-6 max-w-md mx-auto tracking-wider">
+        Everything you need to know. Can't find what you're looking for? Hit us up.
+      </p>
+    </div>
+  </section>
+
+  <Marquee texts={['QUESTIONS', 'ANSWERS', 'HELP', 'SUPPORT']} variant="outlined" speed="fast" />
+
+  <!-- FAQ Content -->
+  <section class="py-16 px-6 md:px-10 max-w-4xl mx-auto">
+    <!-- Category filter -->
+    <div class="flex flex-wrap gap-3 mb-12">
+      <button
+        class="faq-filter-btn active text-xs uppercase tracking-[0.2em] px-5 py-2 border border-nico-red text-nico-red transition-all duration-300 cursor-pointer"
+        data-category="all"
+      >
+        ALL
+      </button>
+      {faqCategories.map((cat) => (
+        <button
+          class="faq-filter-btn text-xs uppercase tracking-[0.2em] px-5 py-2 border border-nico-border text-nico-muted hover:border-nico-text hover:text-nico-text transition-all duration-300 cursor-pointer"
+          data-category={cat}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="space-y-2" id="faq-list">
+      {faqItems.map((item, i) => (
+        <div
+          class="faq-item border border-nico-border hover:border-nico-red/30 transition-all duration-300 fade-in-element"
+          data-category={item.category}
+          style={`animation-delay: ${i * 80}ms`}
+        >
+          <button
+            class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer group"
+            aria-expanded="false"
+          >
+            <div class="flex items-center gap-4">
+              <span class="text-nico-red font-heading text-lg w-8">
+                {String(item.id).padStart(2, '0')}
+              </span>
+              <h3 class="font-heading text-lg md:text-xl tracking-wider group-hover:text-nico-red transition-colors duration-300">
+                {item.question}
+              </h3>
+            </div>
+            <svg
+              class="w-5 h-5 text-nico-muted transform transition-transform duration-300 flex-shrink-0 ml-4 faq-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v12m6-6H6" />
+            </svg>
+          </button>
+          <div class="faq-answer max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+            <div class="px-6 pb-6 pl-18">
+              <div class="pl-12 border-l-2 border-nico-red/20">
+                <p class="text-nico-muted text-sm md:text-base leading-relaxed tracking-wider">
+                  {item.answer}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Contact CTA -->
+    <div class="mt-20 text-center border border-nico-border p-12">
+      <h3 class="font-heading text-3xl tracking-wider mb-4">STILL HAVE QUESTIONS?</h3>
+      <p class="text-nico-muted text-sm tracking-wider mb-8">We're here to help. Get in touch with our team.</p>
+      <a
+        href="mailto:support@nicostore.com"
+        class="inline-block border-2 border-nico-red text-nico-red px-10 py-4 font-heading tracking-[0.2em] hover:bg-nico-red hover:text-nico-text transition-all duration-300"
+      >
+        CONTACT US
+      </a>
+    </div>
+  </section>
+
+  <Footer />
+
+  <script>
+    // FAQ Accordion
+    const toggles = document.querySelectorAll('.faq-toggle');
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const item = toggle.parentElement;
+        const answer = item?.querySelector('.faq-answer') as HTMLElement;
+        const icon = toggle.querySelector('.faq-icon');
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+        // Close all others
+        document.querySelectorAll('.faq-item').forEach((other) => {
+          if (other !== item) {
+            const otherAnswer = other.querySelector('.faq-answer') as HTMLElement;
+            const otherToggle = other.querySelector('.faq-toggle');
+            const otherIcon = other.querySelector('.faq-icon');
+            if (otherAnswer) otherAnswer.style.maxHeight = '0';
+            otherToggle?.setAttribute('aria-expanded', 'false');
+            otherIcon?.classList.remove('rotate-45');
+          }
+        });
+
+        // Toggle current
+        if (isOpen) {
+          if (answer) answer.style.maxHeight = '0';
+          toggle.setAttribute('aria-expanded', 'false');
+          icon?.classList.remove('rotate-45');
+        } else {
+          if (answer) answer.style.maxHeight = answer.scrollHeight + 'px';
+          toggle.setAttribute('aria-expanded', 'true');
+          icon?.classList.add('rotate-45');
+        }
+      });
+    });
+
+    // Category filter
+    const filterBtns = document.querySelectorAll('.faq-filter-btn');
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const category = (btn as HTMLElement).dataset.category;
+
+        // Update active state
+        filterBtns.forEach((b) => {
+          b.classList.remove('active', 'border-nico-red', 'text-nico-red');
+          b.classList.add('border-nico-border', 'text-nico-muted');
+        });
+        btn.classList.add('active', 'border-nico-red', 'text-nico-red');
+        btn.classList.remove('border-nico-border', 'text-nico-muted');
+
+        // Filter items
+        faqItems.forEach((item) => {
+          const itemCat = (item as HTMLElement).dataset.category;
+          if (category === 'all' || itemCat === category) {
+            (item as HTMLElement).style.display = '';
+          } else {
+            (item as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</Layout>

@@ -1,0 +1,48 @@
+---
+interface Props {
+  texts?: string[];
+  speed?: 'slow' | 'normal' | 'fast';
+  direction?: 'left' | 'right';
+  variant?: 'default' | 'outlined' | 'red';
+}
+
+const {
+  texts = ['NICO', 'STREETWEAR', 'UNDERGROUND', 'NO RULES', 'LIMITED DROPS', 'WEAR THE VOID'],
+  speed = 'normal',
+  direction = 'left',
+  variant = 'default',
+} = Astro.props;
+
+const speedClass = {
+  slow: 'animate-marquee [animation-duration:45s]',
+  normal: 'animate-marquee [animation-duration:30s]',
+  fast: 'animate-marquee [animation-duration:18s]',
+};
+
+const reverseSpeedClass = {
+  slow: 'animate-marquee-reverse [animation-duration:40s]',
+  normal: 'animate-marquee-reverse [animation-duration:25s]',
+  fast: 'animate-marquee-reverse [animation-duration:15s]',
+};
+
+const animClass = direction === 'left' ? speedClass[speed] : reverseSpeedClass[speed];
+
+const variantStyles = {
+  default: 'text-nico-text/10 font-heading text-6xl md:text-8xl',
+  outlined: 'text-stroke font-heading text-6xl md:text-8xl opacity-20',
+  red: 'text-nico-red/30 font-heading text-5xl md:text-7xl',
+};
+
+const repeatedTexts = [...texts, ...texts, ...texts, ...texts];
+const separator = ' ★ ';
+---
+
+<div class="overflow-hidden whitespace-nowrap py-4 select-none">
+  <div class={`inline-flex ${animClass}`}>
+    {repeatedTexts.map((text) => (
+      <span class={`${variantStyles[variant]} tracking-wider mx-4 inline-block`}>
+        {text}{separator}
+      </span>
+    ))}
+  </div>
+</div>

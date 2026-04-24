@@ -1,0 +1,159 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import SidebarMenu from '../components/SidebarMenu.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import Marquee from '../components/Marquee.astro';
+import Footer from '../components/Footer.astro';
+import { currentUser } from '../data/users';
+import { products } from '../data/products';
+
+const favorites = products.filter((p) => currentUser.favoriteIds.includes(p.id));
+
+const statusColors: Record<string, string> = {
+  delivered: 'text-green-500 border-green-500/30',
+  shipped: 'text-yellow-500 border-yellow-500/30',
+  processing: 'text-nico-red border-nico-red/30',
+};
+---
+
+<Layout title="Profile">
+  <Navbar />
+  <SidebarMenu />
+  <CartDrawer />
+
+  <!-- Profile Header -->
+  <section class="relative pt-32 pb-20 px-6 md:px-10 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-b from-nico-surface to-nico-black"></div>
+    <div class="absolute top-0 right-0 w-96 h-96 bg-nico-purple/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-nico-red/5 rounded-full blur-3xl"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row items-start gap-8">
+        <!-- Avatar -->
+        <div
+          class="w-28 h-28 md:w-36 md:h-36 rounded-sm flex-shrink-0 flex items-center justify-center"
+          style={`background: ${currentUser.avatar};`}
+        >
+          <span class="font-heading text-4xl md:text-5xl">
+            {currentUser.name.split(' ').map(n => n[0]).join('')}
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1">
+          <span class="text-nico-muted text-xs uppercase tracking-[0.4em]">Profile</span>
+          <h1 class="font-heading text-5xl md:text-7xl tracking-wider mt-2">{currentUser.name.toUpperCase()}</h1>
+          <div class="flex flex-wrap gap-6 mt-4">
+            <span class="text-nico-muted text-sm tracking-wider">{currentUser.username}</span>
+            <span class="text-nico-muted text-sm tracking-wider">{currentUser.email}</span>
+            <span class="text-nico-muted text-sm tracking-wider">
+              Member since {new Date(currentUser.memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Marquee texts={['MY ACCOUNT', currentUser.username.toUpperCase(), 'NICO MEMBER']} variant="outlined" speed="fast" />
+
+  <!-- Profile Content -->
+  <section class="py-16 px-6 md:px-10 max-w-5xl mx-auto">
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-16">
+      <div class="border border-nico-border p-6 text-center">
+        <span class="font-heading text-3xl md:text-4xl text-nico-red">{currentUser.orders.length}</span>
+        <p class="text-nico-muted text-xs uppercase tracking-[0.3em] mt-2">Orders</p>
+      </div>
+      <div class="border border-nico-border p-6 text-center">
+        <span class="font-heading text-3xl md:text-4xl text-nico-red">{favorites.length}</span>
+        <p class="text-nico-muted text-xs uppercase tracking-[0.3em] mt-2">Favorites</p>
+      </div>
+      <div class="border border-nico-border p-6 text-center">
+        <span class="font-heading text-3xl md:text-4xl text-nico-red">
+          ${currentUser.orders.reduce((sum, o) => sum + o.total, 0)}
+        </span>
+        <p class="text-nico-muted text-xs uppercase tracking-[0.3em] mt-2">Total Spent</p>
+      </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="mb-16">
+      <h2 class="font-heading text-3xl tracking-wider mb-8 flex items-center gap-4">
+        ORDERS
+        <div class="flex-1 h-[1px] bg-nico-border"></div>
+      </h2>
+
+      <div class="space-y-4">
+        {currentUser.orders.map((order) => (
+          <div class="border border-nico-border p-6 hover:border-nico-red/30 transition-colors duration-300 group">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+              <div class="flex items-center gap-4">
+                <span class="font-heading text-lg tracking-wider">{order.id}</span>
+                <span class={`text-[10px] uppercase tracking-widest px-3 py-1 border ${statusColors[order.status]}`}>
+                  {order.status}
+                </span>
+              </div>
+              <span class="text-nico-muted text-sm tracking-wider">
+                {new Date(order.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+            <div class="space-y-2">
+              {order.items.map((item) => (
+                <div class="flex justify-between text-sm">
+                  <span class="text-nico-muted tracking-wider">
+                    {item.name} <span class="text-nico-text/40">× {item.quantity}</span>
+                  </span>
+                  <span class="text-nico-muted">${item.price}</span>
+                </div>
+              ))}
+            </div>
+            <div class="mt-4 pt-4 border-t border-nico-border flex justify-between items-center">
+              <span class="text-nico-muted text-xs uppercase tracking-[0.3em]">Total</span>
+              <span class="font-heading text-xl">${order.total}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Favorites -->
+    <div>
+      <h2 class="font-heading text-3xl tracking-wider mb-8 flex items-center gap-4">
+        FAVORITES
+        <div class="flex-1 h-[1px] bg-nico-border"></div>
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {favorites.map((product, i) => (
+          <a href="#" class="group block" data-product-id={product.id}>
+            <div class="relative overflow-hidden product-card-hover">
+              <div class="glitch-hover relative">
+                <div
+                  class="aspect-[3/4] w-full rounded-sm"
+                  style={`background: ${product.gradient};`}
+                >
+                  <div class="absolute top-3 right-3">
+                    <svg class="w-5 h-5 text-nico-red fill-current" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 space-y-1">
+                <h3 class="font-heading text-sm tracking-wider group-hover:text-nico-red transition-colors duration-300">
+                  {product.name}
+                </h3>
+                <span class="text-nico-muted text-xs">${product.price}</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

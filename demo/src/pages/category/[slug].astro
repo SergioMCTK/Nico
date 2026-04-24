@@ -1,0 +1,121 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import SidebarMenu from '../../components/SidebarMenu.astro';
+import CartDrawer from '../../components/CartDrawer.astro';
+import Marquee from '../../components/Marquee.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Footer from '../../components/Footer.astro';
+import { products, getProductsByCategory, getProductsByGender } from '../../data/products';
+import { categories, getCategoryBySlug } from '../../data/categories';
+import type { Product } from '../../data/products';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'men' } },
+    { params: { slug: 'women' } },
+    { params: { slug: 'unisex' } },
+    { params: { slug: 'hoodies' } },
+    { params: { slug: 'tees' } },
+    { params: { slug: 'pants' } },
+    { params: { slug: 'jackets' } },
+    { params: { slug: 'accessories' } },
+  ];
+}
+
+const { slug } = Astro.params;
+const category = getCategoryBySlug(slug!);
+
+let filteredProducts: Product[];
+if (category?.type === 'gender') {
+  filteredProducts = getProductsByGender(slug!);
+} else {
+  filteredProducts = getProductsByCategory(slug!);
+}
+---
+
+<Layout title={category?.name || 'Category'}>
+  <Navbar />
+  <SidebarMenu />
+  <CartDrawer />
+
+  <!-- Category Hero -->
+  <section class="relative min-h-[60vh] flex items-end overflow-hidden">
+    <!-- Background gradient -->
+    <div
+      class="absolute inset-0"
+      style={`background: ${category?.gradient || 'linear-gradient(135deg, #1a1a1a, #0a0a0a)'};`}
+    ></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-nico-black via-nico-black/50 to-transparent"></div>
+
+    <!-- Grid lines decoration -->
+    <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#f5f5f5 1px, transparent 1px), linear-gradient(90deg, #f5f5f5 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+    <div class="relative z-10 px-6 md:px-10 pb-16 pt-32 w-full">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+          <span class="text-nico-muted text-xs uppercase tracking-[0.4em]">
+            {category?.type === 'gender' ? 'Gender' : 'Category'}
+          </span>
+          <h1 class="font-heading text-[clamp(3rem,10vw,10rem)] leading-[0.9] tracking-wider mt-2">
+            {category?.name}
+          </h1>
+          <p class="text-nico-muted text-sm md:text-base mt-4 max-w-md tracking-wider">
+            {category?.description}
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-nico-muted text-xs uppercase tracking-[0.3em]">
+            {filteredProducts.length} pieces
+          </span>
+          <div class="w-8 h-[1px] bg-nico-border"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Navigation -->
+  <section class="border-b border-nico-border">
+    <div class="px-6 md:px-10 py-4 flex gap-4 overflow-x-auto scrollbar-none">
+      {categories.map((cat) => (
+        <a
+          href={`/category/${cat.slug}`}
+          class:list={[
+            'whitespace-nowrap text-xs uppercase tracking-[0.2em] px-4 py-2 border transition-all duration-300',
+            cat.slug === slug
+              ? 'border-nico-red text-nico-red'
+              : 'border-nico-border text-nico-muted hover:border-nico-text hover:text-nico-text',
+          ]}
+        >
+          {cat.name}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Products Grid -->
+  <section class="py-16 px-6 md:px-10">
+    {filteredProducts.length > 0 ? (
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        {filteredProducts.map((product, i) => (
+          <ProductCard product={product} index={i} />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-32">
+        <p class="font-heading text-3xl tracking-wider text-nico-muted">NO PRODUCTS FOUND</p>
+        <p class="text-nico-muted text-sm mt-4 tracking-wider">Check back soon for new drops.</p>
+      </div>
+    )}
+  </section>
+
+  <Marquee
+    texts={[category?.name || 'NICO', 'STREETWEAR', 'UNDERGROUND', 'LIMITED']}
+    variant="outlined"
+    speed="slow"
+    direction="right"
+  />
+
+  <Footer />
+</Layout>
